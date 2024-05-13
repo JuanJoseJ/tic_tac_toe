@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class GameLayout extends StatefulWidget {
@@ -11,34 +12,49 @@ class GameLayout extends StatefulWidget {
 
 class _GameLayoutState extends State<GameLayout> {
   List<String> board = List.filled(9, "", growable: false);
+  List<String> newBoard = List.filled(9, "", growable: false);
   bool xTurn = true;
   bool isWinner = false;
 
   tapBoard(int index) {
-    setState(() {
-      if (!isWinner) {
-        if (board[index] == "") {
-          if (xTurn) {
-            board[index] = "X";
-          } else {
-            board[index] = "O";
-          }
-          if (!checkWin()) {
-            xTurn = !xTurn;
-          } else {
-            isWinner = true;
-          }
+    if (!isWinner) {
+      newBoard = [...board];
+      if (newBoard[index] == "") {
+        if (xTurn) {
+          setState(() {
+            newBoard[index] = "X";
+          });
+        } else {
+          setState(() {
+            newBoard[index] = "O";
+          });
         }
       }
-    });
+    }
   }
 
   resetBoard() {
     setState(() {
       board = List.filled(9, "", growable: false);
+      newBoard = List.filled(9, "", growable: false);
       xTurn = true;
       isWinner = false;
     });
+  }
+
+  passTurn() {
+    if (listEquals(board, newBoard)) {
+    } else {
+      setState(() {
+        board = [...newBoard];
+        xTurn = !xTurn;
+      });
+    }
+    if (checkWin()) {
+      setState(() {
+        isWinner = true;
+      });
+    }
   }
 
   bool checkWin() {
@@ -50,7 +66,7 @@ class _GameLayoutState extends State<GameLayout> {
     }
 
     for (int i = 0; i < 3; i += 1) {
-      if (board[i] == board[i + 1] && board[i] == board[i + 2]) {
+      if (board[i] == board[i + 3] && board[i] == board[i + 6]) {
         if (board[i] != "") return true;
       }
     }
@@ -81,18 +97,28 @@ class _GameLayoutState extends State<GameLayout> {
                       tapBoard(index);
                     },
                     child: Container(
-                      child: Center(child: Text(board[index])),
+                      child: Center(child: Text(newBoard[index])),
                       color: Colors.amber,
                     ));
               }),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: IconButton(
-            onPressed: () {
-              resetBoard();
-            },
-            icon: const Icon(Icons.restart_alt_rounded),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: () {
+                  resetBoard();
+                },
+                icon: const Icon(Icons.restart_alt_rounded),
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    passTurn();
+                  },
+                  child: Text("End Turn")),
+            ],
           ),
         ),
       ],
