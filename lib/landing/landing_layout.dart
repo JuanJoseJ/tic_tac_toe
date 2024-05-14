@@ -14,7 +14,11 @@ class LandingLayout extends StatelessWidget {
           const Text("Landing"),
           ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, "/logIn");
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  "/logIn",
+                  (Route<dynamic> route) => false,
+                );
               },
               child: const Text("Go to LogIn")),
           ElevatedButton(
