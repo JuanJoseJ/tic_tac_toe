@@ -17,6 +17,7 @@ class _GameLayoutState extends State<GameLayout> {
   List<String> newBoard = List.filled(9, "", growable: false);
   bool xTurn = true;
   bool isWinner = false;
+  bool isTie = false;
 
   resetBoard() {
     setState(() {
@@ -24,6 +25,7 @@ class _GameLayoutState extends State<GameLayout> {
       newBoard = List.filled(9, "", growable: false);
       xTurn = true;
       isWinner = false;
+      isTie = false;
     });
   }
 
@@ -38,6 +40,11 @@ class _GameLayoutState extends State<GameLayout> {
     if (checkWin()) {
       setState(() {
         isWinner = true;
+      });
+    }
+    if(checkTie()){
+      setState(() {
+        isTie = true;
       });
     }
   }
@@ -61,6 +68,13 @@ class _GameLayoutState extends State<GameLayout> {
       if (board[4] != "") return true;
     }
     return false;
+  }
+
+  bool checkTie(){
+    if(board.any((element) => element == "")){
+      return false;
+    }
+    return true;
   }
 
   @override
@@ -98,7 +112,7 @@ class _GameLayoutState extends State<GameLayout> {
           height: 50,
           width: 50,
           child: Container(
-            child: (listEquals(newBoard, board) && !isWinner)
+            child: (listEquals(newBoard, board) && !isWinner && !isTie)
                 ? DraggableSymbol(
                     type: xTurn ? 'X' : "O",
                     painter: xTurn ? CrossPainter() : CirclePainter(),
@@ -137,7 +151,7 @@ class _GameLayoutState extends State<GameLayout> {
 
   DragTarget<String> _draggableTile(int index) {
     return DragTarget<String>(
-      onWillAccept: (data) => (newBoard[index] == '' && !isWinner),
+      onWillAccept: (data) => (newBoard[index] == '' && !isWinner && !isTie),
       onAccept: (data) {
         setState(() {
           newBoard = [...board];
