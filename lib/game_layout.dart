@@ -16,7 +16,7 @@ class _GameLayoutState extends State<GameLayout> {
   List<String> board = List.filled(9, "", growable: false);
   List<String> newBoard = List.filled(9, "", growable: false);
   bool xTurn = true;
-  bool isWinner = false;
+  bool isWin = false;
   bool isTie = false;
 
   resetBoard() {
@@ -24,7 +24,7 @@ class _GameLayoutState extends State<GameLayout> {
       board = List.filled(9, "", growable: false);
       newBoard = List.filled(9, "", growable: false);
       xTurn = true;
-      isWinner = false;
+      isWin = false;
       isTie = false;
     });
   }
@@ -39,13 +39,16 @@ class _GameLayoutState extends State<GameLayout> {
     }
     if (checkWin()) {
       setState(() {
-        isWinner = true;
+        isWin = true;
       });
     }
-    if(checkTie()){
+    if (checkTie()) {
       setState(() {
         isTie = true;
       });
+    }
+    if (isTie || isWin) {
+      _showEndDialog(context);
     }
   }
 
@@ -70,8 +73,8 @@ class _GameLayoutState extends State<GameLayout> {
     return false;
   }
 
-  bool checkTie(){
-    if(board.any((element) => element == "")){
+  bool checkTie() {
+    if (board.any((element) => element == "" && !isWin)) {
       return false;
     }
     return true;
@@ -112,7 +115,7 @@ class _GameLayoutState extends State<GameLayout> {
           height: 50,
           width: 50,
           child: Container(
-            child: (listEquals(newBoard, board) && !isWinner && !isTie)
+            child: (listEquals(newBoard, board) && !isWin && !isTie)
                 ? DraggableSymbol(
                     type: xTurn ? 'X' : "O",
                     painter: xTurn ? CrossPainter() : CirclePainter(),
@@ -151,7 +154,7 @@ class _GameLayoutState extends State<GameLayout> {
 
   DragTarget<String> _draggableTile(int index) {
     return DragTarget<String>(
-      onWillAccept: (data) => (newBoard[index] == '' && !isWinner && !isTie),
+      onWillAccept: (data) => (newBoard[index] == '' && !isWin && !isTie),
       onAccept: (data) {
         setState(() {
           newBoard = [...board];
@@ -179,5 +182,42 @@ class _GameLayoutState extends State<GameLayout> {
         );
       },
     );
+  }
+
+  Future<void> _showEndDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext conext) {
+          late Widget title;
+          if (isWin) {
+            title = Text("${!xTurn ? 'X' : 'O'} won!");
+          } else if (isTie) {
+            title = const Text("Its a tie!");
+          } else {
+            throw ("Game ended unexpectedly!");
+          }
+          return AlertDialog(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                title,
+              ],
+            ),
+            actions: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    child: const Text('Play Again'),
+                    onPressed: () {
+                      resetBoard();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            ],
+          );
+        });
   }
 }
