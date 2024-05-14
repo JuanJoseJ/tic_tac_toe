@@ -7,16 +7,22 @@ class LoginLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("Login Page"),
-            ElevatedButton(onPressed: () {
-              Navigator.pushNamed(context, "/landing");
-            }, child: const Text("Log In")),
-          ],
-          ),
-      ));
+        body: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text("Login Page"),
+          ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  "/landing",
+                  (Route<dynamic> route) => false,
+                );
+              },
+              child: const Text("Log In")),
+        ],
+      ),
+    ));
   }
 }
