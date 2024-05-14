@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:tic_tac_toe/draggable_object.dart';
+import 'package:tic_tac_toe/drawings.dart';
 
 class GameLayout extends StatefulWidget {
   const GameLayout({
@@ -15,23 +17,6 @@ class _GameLayoutState extends State<GameLayout> {
   List<String> newBoard = List.filled(9, "", growable: false);
   bool xTurn = true;
   bool isWinner = false;
-
-  tapBoard(int index) {
-    if (!isWinner) {
-      newBoard = [...board];
-      if (newBoard[index] == "") {
-        if (xTurn) {
-          setState(() {
-            newBoard[index] = "X";
-          });
-        } else {
-          setState(() {
-            newBoard[index] = "O";
-          });
-        }
-      }
-    }
-  }
 
   resetBoard() {
     setState(() {
@@ -81,47 +66,104 @@ class _GameLayoutState extends State<GameLayout> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Text("Turn: ${xTurn ? 'X' : 'O'}"),
-        Text("Is Winner: $isWinner"),
-        Center(
-          child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, crossAxisSpacing: 10, mainAxisSpacing: 10),
-              itemCount: 9,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                    onTap: () {
-                      tapBoard(index);
-                    },
-                    child: Container(
-                      child: Center(child: Text(newBoard[index])),
-                      color: Colors.amber,
-                    ));
-              }),
+        SizedBox(
+          height: 50,
+          child: !xTurn ? _gameControlls() : SizedBox(),
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
+        GridView.builder(
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3, crossAxisSpacing: 10, mainAxisSpacing: 10),
+            itemCount: 9,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              return _draggableTile(index);
+            }),
+        SizedBox(
+          height: 50,
+          child: xTurn ? _gameControlls() : SizedBox(),
+        ),
+      ],
+    );
+  }
+
+  Row _gameControlls() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        SizedBox(
+          height: 50,
+          width: 50,
+          child: Container(
+            child: (listEquals(newBoard, board) && !isWinner)
+                ? DraggableSymbol(
+                    type: xTurn ? 'X' : "O",
+                    painter: xTurn ? CrossPainter() : CirclePainter(),
+                    enabled: true,
+                  )
+                : null,
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                passTurn();
+              },
+              child: RotatedBox(
+                  quarterTurns: xTurn ? 0 : 2,
+                  child: const Text(
+                    "End Turn",
+                  )),
+            ),
+            RotatedBox(
+              quarterTurns: xTurn ? 0 : 2,
+              child: IconButton(
                 onPressed: () {
                   resetBoard();
                 },
                 icon: const Icon(Icons.restart_alt_rounded),
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    passTurn();
-                  },
-                  child: Text("End Turn")),
-            ],
-          ),
+            ),
+          ],
         ),
       ],
+    );
+  }
+
+  DragTarget<String> _draggableTile(int index) {
+    return DragTarget<String>(
+      onWillAccept: (data) => (newBoard[index] == '' && !isWinner),
+      onAccept: (data) {
+        setState(() {
+          newBoard = [...board];
+          newBoard[index] = data;
+        });
+      },
+      builder: (context, candidateData, rejectedData) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.amber,
+          ),
+          child: newBoard[index] == 'X'
+              ? DraggableSymbol(
+                  type: 'X',
+                  painter: CrossPainter(),
+                  enabled: board[index] != newBoard[index],
+                )
+              : newBoard[index] == "O"
+                  ? DraggableSymbol(
+                      type: 'O',
+                      painter: CirclePainter(),
+                      enabled: board[index] != newBoard[index],
+                    )
+                  : null,
+        );
+      },
     );
   }
 }
