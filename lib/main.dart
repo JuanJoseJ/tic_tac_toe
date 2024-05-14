@@ -1,41 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:tic_tac_toe/game_layout.dart';
+import 'package:tic_tac_toe/game/game_layout.dart';
+import 'package:tic_tac_toe/landing/landing_layout.dart';
+import 'package:tic_tac_toe/user/logIn_layout.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+  final GlobalKey<NavigatorState> mainNavigatorKey =
+      GlobalKey<NavigatorState>();
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Tic Tac Toe',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  final String title;
-
-  const MyHomePage({super.key, required this.title});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: GameLayout(),
+      navigatorKey: mainNavigatorKey,
+      initialRoute: '/logIn',
+      routes: <String, WidgetBuilder>{
+        "/logIn": (context) => LoginLayout(
+              navigator: mainNavigatorKey,
+            ),
+        "/landing": (context) => LandingLayout(
+              navigator: mainNavigatorKey,
+            ),
+        "/localGame": (context) => GameLayout(
+              navigator: mainNavigatorKey,
+            ),
+        "/onlineGame": (context) => GameLayout(
+              navigator: mainNavigatorKey,
+            ),
+      },
     );
   }
 }

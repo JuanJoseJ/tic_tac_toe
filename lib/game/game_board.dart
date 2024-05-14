@@ -1,18 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:tic_tac_toe/draggable_object.dart';
-import 'package:tic_tac_toe/drawings.dart';
+import 'package:tic_tac_toe/game/draggable_object.dart';
+import 'package:tic_tac_toe/game/drawings.dart';
 
-class GameLayout extends StatefulWidget {
-  const GameLayout({
+class GameBoard extends StatefulWidget {
+  const GameBoard({
     super.key,
   });
 
   @override
-  State<GameLayout> createState() => _GameLayoutState();
+  State<GameBoard> createState() => _GameBoardState();
 }
 
-class _GameLayoutState extends State<GameLayout> {
+class _GameBoardState extends State<GameBoard> {
   List<String> board = List.filled(9, "", growable: false);
   List<String> newBoard = List.filled(9, "", growable: false);
   bool xTurn = true;
