@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tic_tac_toe/game/game_layout.dart';
+import 'package:tic_tac_toe/game/local_game_layout.dart';
+import 'package:tic_tac_toe/game/multiplayer_game_layout.dart';
 import 'package:tic_tac_toe/landing/landing_layout.dart';
 import 'package:tic_tac_toe/realtime_db_service.dart';
 import 'package:tic_tac_toe/user/logIn_layout.dart';
@@ -40,7 +41,7 @@ class MyApp extends StatelessWidget {
         "/localGame": (context) => GameLayout(
               navigator: mainNavigatorKey,
             ),
-        "/onlineGame": (context) => GameLayout(
+        "/multiplayerGame": (context) => MultiplayerGameLayout(
               navigator: mainNavigatorKey,
             ),
       },

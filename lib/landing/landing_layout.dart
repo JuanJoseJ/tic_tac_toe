@@ -28,7 +28,7 @@ class LandingLayout extends StatelessWidget {
               child: const Text("Start Local Game")),
           ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, "/onlineGame");
+                Navigator.pushNamed(context, "/multiplayerGame");
               },
               child: const Text("Start Online Game")),
         ],
