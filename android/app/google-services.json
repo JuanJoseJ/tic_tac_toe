@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "349222374497",
+    "firebase_url": "https://tic-tac-toe-e7090-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "tic-tac-toe-e7090",
+    "storage_bucket": "tic-tac-toe-e7090.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:349222374497:android:834edc38f90d32f5836e20",
+        "android_client_info": {
+          "package_name": "com.example.tic_tac_toe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCK5gk2nqra4w5h0yKZa0glIkWvBu5msFw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
