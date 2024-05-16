@@ -4,7 +4,7 @@ import 'package:tic_tac_toe/game/game_dialogs.dart';
 import 'package:tic_tac_toe/game/game_board.dart';
 import 'package:tic_tac_toe/game/game_control.dart';
 import 'package:tic_tac_toe/game/game_drawer.dart';
-import 'package:tic_tac_toe/game/util.dart';
+import 'package:tic_tac_toe/game/game_util.dart';
 
 class GameLayout extends StatefulWidget {
   final GlobalKey<NavigatorState> navigator;
