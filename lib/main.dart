@@ -5,7 +5,6 @@ import 'package:tic_tac_toe/landing/landing_layout.dart';
 import 'package:tic_tac_toe/realtime_db_service.dart';
 import 'package:tic_tac_toe/user/logIn_layout.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:tic_tac_toe/util/game_data_class.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -13,14 +12,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  RealtimeDBSerice rtdbs = RealtimeDBSerice((GameData gameData) {
-    print("GameData updated --> Player Id is: ${gameData.player1Id}");
-  });
-  await rtdbs.startGame("g1", "p1");
-  // rtdbs.listenToGameChanges("g1");
-  await rtdbs.updateGame(GameData("g1", "new p1"));
-
-
   runApp(MyApp());
 }
 
@@ -28,6 +19,7 @@ class MyApp extends StatelessWidget {
   MyApp({super.key});
   final GlobalKey<NavigatorState> mainNavigatorKey =
       GlobalKey<NavigatorState>();
+  final RealtimeDBSerice rtdbs = RealtimeDBSerice(null);
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +37,14 @@ class MyApp extends StatelessWidget {
             ),
         "/landing": (context) => LandingLayout(
               navigator: mainNavigatorKey,
+              rtdbs: rtdbs,
             ),
         "/localGame": (context) => GameLayout(
               navigator: mainNavigatorKey,
             ),
         "/multiplayerGame": (context) => MultiplayerGameLayout(
               navigator: mainNavigatorKey,
+              rtdbs: rtdbs,
             ),
       },
     );

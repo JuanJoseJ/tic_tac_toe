@@ -5,10 +5,13 @@ import 'package:tic_tac_toe/game/game_board.dart';
 import 'package:tic_tac_toe/game/game_control.dart';
 import 'package:tic_tac_toe/game/game_drawer.dart';
 import 'package:tic_tac_toe/game/game_util.dart';
+import 'package:tic_tac_toe/realtime_db_service.dart';
 
 class MultiplayerGameLayout extends StatefulWidget {
   final GlobalKey<NavigatorState> navigator;
-  const MultiplayerGameLayout({super.key, required this.navigator});
+  final RealtimeDBSerice rtdbs;
+  const MultiplayerGameLayout(
+      {super.key, required this.navigator, required this.rtdbs});
 
   @override
   State<MultiplayerGameLayout> createState() => _MultiplayerGameLayoutState();
@@ -20,6 +23,9 @@ class _MultiplayerGameLayoutState extends State<MultiplayerGameLayout> {
   bool xTurn = true;
   bool isWin = false;
   bool isTie = false;
+
+  /// CHENGE THIS LATER
+  String gameId = "g1";
 
   resetBoard() {
     setState(() {
@@ -63,31 +69,46 @@ class _MultiplayerGameLayoutState extends State<MultiplayerGameLayout> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: const GameDrawer(),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(
-            height: 50,
-            child: Text("MULTI PLAYER GAME"),
-          ),
-          GameBoard(
-            board: board,
-            newBoard: newBoard,
-            isTie: isTie,
-            isWin: isWin,
-            xTurn: xTurn,
-            makeMove: makeMove,
-          ),
-          SizedBox(
-            height: 50,
-            child: xTurn
-                ? gameControlls(xTurn, passTurn, resetBoard)
-                : const SizedBox(),
-          ),
-        ],
+    return WillPopScope(
+      onWillPop: () async {
+        // Close game on any type of pop of the widget
+        widget.rtdbs.endGame(gameId);
+        return true; // Return true to allow the pop (dismissal of the dialog)
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(''),
+        ),
+        drawer: GameDrawer(rtdbs: widget.rtdbs, gameId: gameId),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // const SizedBox(
+            //   height: 50,
+            //   child: Text("MULTI PLAYER GAME"),
+            // ),
+            GameBoard(
+              board: board,
+              newBoard: newBoard,
+              isTie: isTie,
+              isWin: isWin,
+              xTurn: xTurn,
+              makeMove: makeMove,
+            ),
+            SizedBox(
+              height: 50,
+              child: xTurn
+                  ? gameControlls(xTurn, passTurn, resetBoard)
+                  : const SizedBox(),
+            ),
+          ],
+        ),
       ),
     );
   }

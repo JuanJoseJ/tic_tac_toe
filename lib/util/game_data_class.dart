@@ -16,7 +16,7 @@ class GameData {
     this.gameId,
     this.player1Id, {
     this.board = const [],
-    this.xIsPlaying = true,
+    this.xIsPlaying = false ,
     this.player2Id,
     this.p1IsWinner,
   });
@@ -27,7 +27,7 @@ class GameData {
       map['gameId'],
       map['player1Id'],
       board: List<String>.from(map['board'] ?? []),
-      xIsPlaying: map['xIsPlaying'] ?? true,
+      xIsPlaying: map['xIsPlaying'] ?? false,
       player2Id: map['player2Id'],
       p1IsWinner: map['p1IsWinner'],
     );

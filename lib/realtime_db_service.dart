@@ -16,7 +16,7 @@ class RealtimeDBSerice {
   /// - Una partida está llena. En cuyo caso no se permitirá verla.
   /// - No hay partidas encontradas.
 
-  final Function(GameData) onGameChanged;
+  Function(GameData)? onGameChanged;
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
   StreamSubscription<DatabaseEvent>? _gameSubscription;
   RealtimeDBSerice(this.onGameChanged);
@@ -30,7 +30,7 @@ class RealtimeDBSerice {
         Map<String, dynamic> data =
             Map<String, dynamic>.from(dataSnapshot.value as Map);
         GameData gameData = GameData.fromMap(data);
-        onGameChanged(gameData);
+        onGameChanged!(gameData);
       } else {
         throw ("Snapshot does not exist");
       }

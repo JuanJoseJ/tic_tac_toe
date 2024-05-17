@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:tic_tac_toe/realtime_db_service.dart';
 
 class GameDrawer extends StatelessWidget {
-  const GameDrawer({
-    super.key,
-  });
+  final RealtimeDBSerice? rtdbs;
+  final String? gameId;
+  const GameDrawer({super.key, this.rtdbs, this.gameId});
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +17,9 @@ class GameDrawer extends StatelessWidget {
             leading: const Icon(Icons.home),
             title: const Text('Landing Page'),
             onTap: () {
+              if (rtdbs != null && gameId != null) {
+                rtdbs!.endGame(gameId!);
+              }
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 '/landing',
@@ -28,6 +31,9 @@ class GameDrawer extends StatelessWidget {
             leading: const Icon(Icons.login),
             title: const Text('Log In'),
             onTap: () {
+              if (rtdbs != null && gameId != null) {
+                rtdbs!.endGame(gameId!);
+              }
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 '/logIn',
