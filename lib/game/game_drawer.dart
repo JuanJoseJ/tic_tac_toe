@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tic_tac_toe/realtime_db_service.dart';
+import 'package:tic_tac_toe/services/realtime_db_service.dart';
 
 class GameDrawer extends StatelessWidget {
   final RealtimeDBSerice? rtdbs;

@@ -48,7 +48,7 @@ class RealtimeDBSerice {
     GameData newGame = GameData(gameId, player1Id);
     try {
       await _database.child("games/$gameId/gameData").set(newGame.toMap());
-      listenToGameChanges("g1");
+      listenToGameChanges(gameId);
     } catch (e) {
       if (kDebugMode) {
         print("An error ocurred starting a game: $e");

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tic_tac_toe/realtime_db_service.dart';
+import 'package:tic_tac_toe/services/realtime_db_service.dart';
 
 Future<void> startGameDialog(
     BuildContext context, String gameId, RealtimeDBSerice rtdbs) {
@@ -12,16 +12,28 @@ Future<void> startGameDialog(
           return true; // Return true to allow the pop (dismissal of the dialog)
         },
         child: AlertDialog(
-          title: Row(
+          title: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("This is your game id: $gameId"),
+              Text("This is your game id:"),
             ],
           ),
-          content: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text("Waiting for p2 to join..."),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SelectableText(gameId),
+                ],
+              ),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Waiting for p2 to join..."),
+                ],
+              ),
             ],
           ),
           actions: [

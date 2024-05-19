@@ -5,7 +5,7 @@ import 'package:tic_tac_toe/game/game_board.dart';
 import 'package:tic_tac_toe/game/game_control.dart';
 import 'package:tic_tac_toe/game/game_drawer.dart';
 import 'package:tic_tac_toe/game/game_util.dart';
-import 'package:tic_tac_toe/realtime_db_service.dart';
+import 'package:tic_tac_toe/services/realtime_db_service.dart';
 
 class MultiplayerGameLayout extends StatefulWidget {
   final GlobalKey<NavigatorState> navigator;

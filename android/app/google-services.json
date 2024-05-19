@@ -13,7 +13,12 @@
           "package_name": "com.example.tic_tac_toe"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "349222374497-dv3p911p1d3okvsi7v9p4fjc8ot2m8gv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCK5gk2nqra4w5h0yKZa0glIkWvBu5msFw"
@@ -21,7 +26,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "349222374497-dv3p911p1d3okvsi7v9p4fjc8ot2m8gv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "349222374497-60m56b9fh0u1v5osrd0iuq3d01f9e4mm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ticTacToe"
+              }
+            }
+          ]
         }
       }
     }

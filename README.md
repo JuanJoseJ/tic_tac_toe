@@ -27,6 +27,7 @@ A simple and interactive Tic Tac Toe game built using Flutter. This application 
 3. **Sound Effects**: Add sound effects for moves, wins, and draws.
 4. **AI Opponent**: Implement a single-player mode with an AI opponent.
 5. **Settings Menu**: Create a settings menu to adjust game preferences.
+5. **Setup Firebase services for IOS**: I do not posses a mac and my pc is not strong enough to run xCode, so I am not able to follow the steps to set up firebase to be used with the application, if you are interested in helping, please follow the steps from [Link](https://console.firebase.google.com/u/1/project/tic-tac-toe-e7090/settings/general/ios:com.example.ticTacToe?hl=es-419).
 
 ## How to Contribute
 
