@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:tic_tac_toe/game/game_dialogs.dart';
+import 'package:provider/provider.dart';
 import 'package:tic_tac_toe/game/game_board.dart';
 import 'package:tic_tac_toe/game/game_control.dart';
+import 'package:tic_tac_toe/game/game_dialogs.dart';
 import 'package:tic_tac_toe/game/game_drawer.dart';
+import 'package:tic_tac_toe/main_provider.dart';
 import 'package:tic_tac_toe/game/game_util.dart';
 import 'package:tic_tac_toe/services/realtime_db_service.dart';
+import 'package:tic_tac_toe/util/game_data_class.dart';
 
 class MultiplayerGameLayout extends StatefulWidget {
   final GlobalKey<NavigatorState> navigator;
@@ -18,93 +22,149 @@ class MultiplayerGameLayout extends StatefulWidget {
 }
 
 class _MultiplayerGameLayoutState extends State<MultiplayerGameLayout> {
-  List<String> board = List.filled(9, "", growable: false);
+  late List<String> board = List.filled(9, "", growable: false);
   List<String> newBoard = List.filled(9, "", growable: false);
   bool xTurn = true;
   bool isWin = false;
   bool isTie = false;
-
-  /// CHENGE THIS LATER
-  String gameId = "g1";
+  bool? isLocalTurn;
+  final String localPlayerId = FirebaseAuth.instance.currentUser!.uid;
 
   resetBoard() {
-    setState(() {
-      board = List.filled(9, "", growable: false);
-      newBoard = List.filled(9, "", growable: false);
-      xTurn = true;
-      isWin = false;
-      isTie = false;
-    });
+    final mainProvider = Provider.of<MainProvider>(context, listen: false);
+    GameData newGameData = GameData(
+      mainProvider.multiPlayerGameId!,
+      player1Id: mainProvider.xIsLocalPlayer
+          ? localPlayerId
+          : mainProvider.adversaryId!,
+      player2Id: mainProvider.xIsLocalPlayer
+          ? mainProvider.adversaryId!
+          : localPlayerId,
+    );
+    newGameData.board = List.filled(9, "", growable: false);
+    newGameData.xIsPlaying = true;
+    newGameData.p1IsWinner = null;
+    newGameData.isTie = false;
+    widget.rtdbs.updateGame(newGameData);
   }
 
-  passTurn() async {
+  passTurn() {
+    final mainProvider = Provider.of<MainProvider>(context, listen: false);
+
+    GameData newGameData = GameData(
+      mainProvider.multiPlayerGameId!,
+      player1Id: mainProvider.xIsLocalPlayer
+          ? localPlayerId
+          : mainProvider.adversaryId!,
+      player2Id: mainProvider.xIsLocalPlayer
+          ? mainProvider.adversaryId!
+          : localPlayerId,
+      
+    );
     if (listEquals(board, newBoard)) {
+      /// If board hasnt changed means that the player is missing a movement
     } else {
-      setState(() {
-        board = [...newBoard];
-        xTurn = !xTurn;
-      });
-    }
-    if (checkWin(board)) {
-      setState(() {
-        isWin = true;
-      });
-    }
-    if (checkTie(board, isWin)) {
-      setState(() {
-        isTie = true;
-      });
-    }
-    if (isTie || isWin) {
-      await showEndDialog(context, isWin, xTurn, isTie);
-      resetBoard();
+      newGameData.board = [...newBoard];
+      newGameData.xIsPlaying = !xTurn;
+      if (checkWin(newBoard)) {
+        if (mainProvider.xIsLocalPlayer) {
+          newGameData.p1IsWinner = true;
+        } else {
+          newGameData.p1IsWinner = false;
+        }
+      }
+      if (checkTie(newBoard, isWin)) {
+        newGameData.isTie = true;
+      }
+      widget.rtdbs.updateGame(newGameData);
     }
   }
 
   makeMove(int index, String data) {
+    /// Por ahora los movimientos en el juego se ven reflejados solo al pasar del turno.
+    /// Más adelante me gustaría que los cambios en el tablero se muestren a los otros jugadores
+    /// así no sean los finales.
     setState(() {
       newBoard = [...board];
       newBoard[index] = data;
     });
   }
 
+  endingProtocol(
+      BuildContext context, bool isWin, bool xTurn, bool isTie) async {
+    await showEndDialog(context, isWin, xTurn, isTie);
+    resetBoard();
+  }
+
   @override
-  void initState() {
+  initState() {
     super.initState();
+
+    /// Here I can't make any setState because there is no state or context yet
+    widget.rtdbs.onGameChanged = (GameData gameData) {
+      if (kDebugMode) {
+        print("CURRENT GAME DATA: ${gameData.toMap()}");
+      }
+      setState(() {
+        // Set current game
+        isLocalTurn =
+            (gameData.xIsPlaying && localPlayerId == gameData.player1Id) ||
+                (!gameData.xIsPlaying && localPlayerId != gameData.player1Id);
+        xTurn = gameData.xIsPlaying;
+        isTie = gameData.isTie;
+        board = [...gameData.board];
+        newBoard = [...gameData.board];
+        if (gameData.p1IsWinner != null) {
+          if (gameData.p1IsWinner! && localPlayerId == gameData.player1Id) {
+            isWin = true;
+          }
+        }
+      });
+      if (isTie || isWin) {
+        endingProtocol(context, isWin, xTurn, isTie);
+      }
+    };
   }
 
   @override
   Widget build(BuildContext context) {
+    final mainProvider = Provider.of<MainProvider>(context);
+
+    if (isLocalTurn == null) {
+      setState(() {
+        isLocalTurn = mainProvider.xIsLocalPlayer;
+      });
+    }
+
     return WillPopScope(
       onWillPop: () async {
         // Close game on any type of pop of the widget
-        widget.rtdbs.endGame(gameId);
-        return true; // Return true to allow the pop (dismissal of the dialog)
+        widget.rtdbs.endGame(mainProvider.multiPlayerGameId!);
+        // Return true to allow the pop (dismissal of the dialog)
+        return true;
       },
       child: Scaffold(
         appBar: AppBar(
           title: const Text(''),
         ),
-        drawer: GameDrawer(rtdbs: widget.rtdbs, gameId: gameId),
+        drawer: GameDrawer(
+            rtdbs: widget.rtdbs, gameId: mainProvider.multiPlayerGameId!),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // const SizedBox(
-            //   height: 50,
-            //   child: Text("MULTI PLAYER GAME"),
-            // ),
             GameBoard(
               board: board,
               newBoard: newBoard,
               isTie: isTie,
               isWin: isWin,
-              xTurn: xTurn,
               makeMove: makeMove,
             ),
             SizedBox(
               height: 50,
-              child: xTurn
-                  ? gameControlls(xTurn, passTurn, resetBoard)
+              child: isLocalTurn != null
+                  ? isLocalTurn!
+                      ? gameControlls(xTurn, passTurn, resetBoard)
+                      : const SizedBox()
                   : const SizedBox(),
             ),
           ],

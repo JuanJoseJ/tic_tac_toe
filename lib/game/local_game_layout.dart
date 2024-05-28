@@ -83,7 +83,6 @@ class _GameLayoutState extends State<GameLayout> {
             newBoard: newBoard,
             isTie: isTie,
             isWin: isWin,
-            xTurn: xTurn,
             makeMove: makeMove,
           ),
           SizedBox(

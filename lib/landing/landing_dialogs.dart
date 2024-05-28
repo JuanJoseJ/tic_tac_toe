@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/services/realtime_db_service.dart';
 
@@ -95,7 +97,7 @@ Future<String?> joinGameDialog(BuildContext context) async {
   );
 }
 
-Future<void> errorGameDialog(BuildContext context, Object? error) {
+FutureOr<Null> errorGameDialog(BuildContext context, Object? error) {
   return showDialog(
     context: context,
     builder: (BuildContext context) {

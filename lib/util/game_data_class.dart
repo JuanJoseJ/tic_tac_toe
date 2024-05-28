@@ -11,12 +11,14 @@ class GameData {
   bool xIsPlaying;
   String? player2Id;
   bool? p1IsWinner;
+  bool isTie;
 
   GameData(
-    this.gameId,
-    this.player1Id, {
+    this.gameId, {
+    required this.player1Id,
     this.board = const [],
-    this.xIsPlaying = false ,
+    this.xIsPlaying = true,
+    this.isTie = false,
     this.player2Id,
     this.p1IsWinner,
   });
@@ -25,7 +27,7 @@ class GameData {
   factory GameData.fromMap(Map<dynamic, dynamic> map) {
     return GameData(
       map['gameId'],
-      map['player1Id'],
+      player1Id: map['player1Id'],
       board: List<String>.from(map['board'] ?? []),
       xIsPlaying: map['xIsPlaying'] ?? false,
       player2Id: map['player2Id'],

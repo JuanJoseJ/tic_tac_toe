@@ -7,7 +7,6 @@ class GameBoard extends StatelessWidget {
   final List<String> newBoard;
   final bool isTie;
   final bool isWin;
-  final bool xTurn;
   final Function makeMove;
   const GameBoard({
     super.key,
@@ -15,7 +14,6 @@ class GameBoard extends StatelessWidget {
     required this.newBoard,
     required this.isTie,
     required this.isWin,
-    required this.xTurn,
     required this.makeMove,
   });
 

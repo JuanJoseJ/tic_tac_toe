@@ -16,7 +16,7 @@ class RealtimeDBSerice {
   /// - Una partida está llena. En cuyo caso no se permitirá verla.
   /// - No hay partidas encontradas.
 
-  Function(GameData)? onGameChanged;
+  Function(GameData) onGameChanged = (gd) {};
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
   StreamSubscription<DatabaseEvent>? _gameSubscription;
   RealtimeDBSerice(this.onGameChanged);
@@ -24,17 +24,18 @@ class RealtimeDBSerice {
   // Listen to changes in game data
   void listenToGameChanges(String gameId) {
     try {
-      _gameSubscription = _database.child("games/$gameId/gameData").onValue.listen((event) {
-      final dataSnapshot = event.snapshot;
-      if (dataSnapshot.exists) {
-        Map<String, dynamic> data =
-            Map<String, dynamic>.from(dataSnapshot.value as Map);
-        GameData gameData = GameData.fromMap(data);
-        onGameChanged!(gameData);
-      } else {
-        throw ("Snapshot does not exist");
-      }
-    });
+      _gameSubscription =
+          _database.child("games/$gameId/gameData").onValue.listen((event) {
+        final dataSnapshot = event.snapshot;
+        if (dataSnapshot.exists) {
+          Map<String, dynamic> data =
+              Map<String, dynamic>.from(dataSnapshot.value as Map);
+          GameData gameData = GameData.fromMap(data);
+          onGameChanged(gameData);
+        } else {
+          throw ("Snapshot does not exist");
+        }
+      });
     } catch (e) {
       if (kDebugMode) {
         print("An error ocurred starting a game: $e");
@@ -45,7 +46,9 @@ class RealtimeDBSerice {
 
   // Get items from Firebase
   Future<void> startGame(String gameId, String player1Id) async {
-    GameData newGame = GameData(gameId, player1Id);
+    List<String> gameBoard = List.filled(9, "");
+    GameData newGame = GameData(gameId,
+        player1Id: player1Id, board: gameBoard, p1IsWinner: null, isTie: false);
     try {
       await _database.child("games/$gameId/gameData").set(newGame.toMap());
       listenToGameChanges(gameId);
@@ -95,6 +98,7 @@ class RealtimeDBSerice {
       joinedGame = await retrieveGame(gameId);
       if (joinedGame.player2Id == null) {
         joinedGame.player2Id = player2Id;
+        joinedGame.xIsPlaying = true;
         await updateGame(joinedGame);
         listenToGameChanges(joinedGame.gameId);
       } else {

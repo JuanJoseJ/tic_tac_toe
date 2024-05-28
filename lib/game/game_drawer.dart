@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tic_tac_toe/main_provider.dart';
 import 'package:tic_tac_toe/services/realtime_db_service.dart';
 
 class GameDrawer extends StatelessWidget {
@@ -8,6 +10,7 @@ class GameDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mainProvider = Provider.of<MainProvider>(context);
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -20,6 +23,7 @@ class GameDrawer extends StatelessWidget {
               if (rtdbs != null && gameId != null) {
                 rtdbs!.endGame(gameId!);
               }
+              mainProvider.setGameId(null);
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 '/landing',
@@ -34,6 +38,7 @@ class GameDrawer extends StatelessWidget {
               if (rtdbs != null && gameId != null) {
                 rtdbs!.endGame(gameId!);
               }
+              mainProvider.setGameId(null);
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 '/logIn',
