@@ -24,13 +24,20 @@ class MultiplayerGameLayout extends StatefulWidget {
 class _MultiplayerGameLayoutState extends State<MultiplayerGameLayout> {
   late List<String> board = List.filled(9, "", growable: false);
   List<String> newBoard = List.filled(9, "", growable: false);
-  bool xTurn = true;
+  bool xIsPlaying = true;
   bool isWin = false;
   bool isTie = false;
   bool? isLocalTurn;
+  bool endDialogShown = false;
   final String localPlayerId = FirebaseAuth.instance.currentUser!.uid;
 
   resetBoard() {
+    setState(() {
+      isLocalTurn = null;
+      isWin = false;
+      isTie = false;
+      endDialogShown = false;
+    });
     final mainProvider = Provider.of<MainProvider>(context, listen: false);
     GameData newGameData = GameData(
       mainProvider.multiPlayerGameId!,
@@ -45,6 +52,7 @@ class _MultiplayerGameLayoutState extends State<MultiplayerGameLayout> {
     newGameData.xIsPlaying = true;
     newGameData.p1IsWinner = null;
     newGameData.isTie = false;
+
     widget.rtdbs.updateGame(newGameData);
   }
 
@@ -59,13 +67,12 @@ class _MultiplayerGameLayoutState extends State<MultiplayerGameLayout> {
       player2Id: mainProvider.xIsLocalPlayer
           ? mainProvider.adversaryId!
           : localPlayerId,
-      
     );
     if (listEquals(board, newBoard)) {
       /// If board hasnt changed means that the player is missing a movement
     } else {
       newGameData.board = [...newBoard];
-      newGameData.xIsPlaying = !xTurn;
+      newGameData.xIsPlaying = !xIsPlaying;
       if (checkWin(newBoard)) {
         if (mainProvider.xIsLocalPlayer) {
           newGameData.p1IsWinner = true;
@@ -92,7 +99,9 @@ class _MultiplayerGameLayoutState extends State<MultiplayerGameLayout> {
 
   endingProtocol(
       BuildContext context, bool isWin, bool xTurn, bool isTie) async {
+    print("ENDING PROTOCOL TRIGGERED");
     await showEndDialog(context, isWin, xTurn, isTie);
+    print("END DIALOG CLOSED !!!!!!!!!!!");
     resetBoard();
   }
 
@@ -110,19 +119,24 @@ class _MultiplayerGameLayoutState extends State<MultiplayerGameLayout> {
         isLocalTurn =
             (gameData.xIsPlaying && localPlayerId == gameData.player1Id) ||
                 (!gameData.xIsPlaying && localPlayerId != gameData.player1Id);
-        xTurn = gameData.xIsPlaying;
         isTie = gameData.isTie;
         board = [...gameData.board];
         newBoard = [...gameData.board];
         if (gameData.p1IsWinner != null) {
-          if (gameData.p1IsWinner! && localPlayerId == gameData.player1Id) {
+          if ((gameData.p1IsWinner! && localPlayerId == gameData.player1Id) ||
+              (!gameData.p1IsWinner! && localPlayerId == gameData.player2Id)) {
             isWin = true;
           }
         }
+        if ((isTie || isWin) && !endDialogShown) {
+          endDialogShown = true;
+          endingProtocol(context, isWin, xIsPlaying, isTie).then((_) {
+            endDialogShown = false;
+          });
+          return;
+        }
+        xIsPlaying = gameData.xIsPlaying;
       });
-      if (isTie || isWin) {
-        endingProtocol(context, isWin, xTurn, isTie);
-      }
     };
   }
 
@@ -147,8 +161,10 @@ class _MultiplayerGameLayoutState extends State<MultiplayerGameLayout> {
         appBar: AppBar(
           title: const Text(''),
         ),
-        drawer: GameDrawer(
-            rtdbs: widget.rtdbs, gameId: mainProvider.multiPlayerGameId!),
+        drawer: mainProvider.multiPlayerGameId != null
+            ? GameDrawer(
+                rtdbs: widget.rtdbs, gameId: mainProvider.multiPlayerGameId!)
+            : null,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -163,7 +179,7 @@ class _MultiplayerGameLayoutState extends State<MultiplayerGameLayout> {
               height: 50,
               child: isLocalTurn != null
                   ? isLocalTurn!
-                      ? gameControlls(xTurn, passTurn, resetBoard)
+                      ? gameControlls(xIsPlaying, passTurn, resetBoard)
                       : const SizedBox()
                   : const SizedBox(),
             ),

@@ -97,6 +97,7 @@ Future<String?> joinGameDialog(BuildContext context) async {
   );
 }
 
+// ignore: prefer_void_to_null
 FutureOr<Null> errorGameDialog(BuildContext context, Object? error) {
   return showDialog(
     context: context,

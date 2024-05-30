@@ -9,7 +9,7 @@ class RealtimeDBSerice {
   /// Cuando un jugador inicia una partida online, se le asigna un código que debe ser usado como referencia
   /// para unirse. Osea, buscar en la base de datos un juego con dicho código. En caso de que haya uno abierto
   /// con esa código, el jugador se unirá con unas fichas.
-  /// Al finalizar la partida, se cerrará la conexión, esto es, la referencia en la base de RTDB.
+  /// Al finalizar la partida, se reinician los valores para jugar de nuevo..
   /// Debe manejarse por ahora las id's de los jugadores de manera generica. Luego se implementaran id's de usuario.
   /// Casos:
   /// - Una partida está abierta pero le falta un jugador.
