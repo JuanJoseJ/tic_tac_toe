@@ -32,6 +32,7 @@ class GameData {
       xIsPlaying: map['xIsPlaying'] ?? false,
       player2Id: map['player2Id'],
       p1IsWinner: map['p1IsWinner'],
+      isTie: map["isTie"],
     );
   }
 
@@ -49,6 +50,7 @@ class GameData {
       'xIsPlaying': xIsPlaying,
       'player2Id': player2Id,
       'p1IsWinner': p1IsWinner,
+      'isTie': isTie
     };
   }
 

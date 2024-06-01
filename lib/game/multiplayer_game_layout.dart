@@ -70,6 +70,9 @@ class _MultiplayerGameLayoutState extends State<MultiplayerGameLayout> {
     );
     if (listEquals(board, newBoard)) {
       /// If board hasnt changed means that the player is missing a movement
+      if (kDebugMode) {
+        print("Make a move before passing the turn");
+      }
     } else {
       newGameData.board = [...newBoard];
       newGameData.xIsPlaying = !xIsPlaying;
@@ -80,7 +83,7 @@ class _MultiplayerGameLayoutState extends State<MultiplayerGameLayout> {
           newGameData.p1IsWinner = false;
         }
       }
-      if (checkTie(newBoard, isWin)) {
+      if (checkTie(newBoard, newGameData.p1IsWinner != null)) {
         newGameData.isTie = true;
       }
       widget.rtdbs.updateGame(newGameData);
@@ -101,7 +104,6 @@ class _MultiplayerGameLayoutState extends State<MultiplayerGameLayout> {
       BuildContext context, bool isWin, bool xTurn, bool isTie) async {
     print("ENDING PROTOCOL TRIGGERED");
     await showEndDialog(context, isWin, xTurn, isTie);
-    print("END DIALOG CLOSED !!!!!!!!!!!");
     resetBoard();
   }
 
